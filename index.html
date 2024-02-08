@@ -7,11 +7,13 @@
     <title>Pogodynka</title>
   </head>
   <body>
-    <form id="weatherForm">
-      <label>Wprowadź miasto:</label>
-      <input type="text" id="city-input" required minlength="1" />
-      <input type="submit" value="Dodaj" />
+    <form id="weatherForm" action="" method="get">
+      <p>Wprowadź miasto:</p>
+      <br />
+      <input type="text" id="cityInput" required minlength="1" />
+      <input id="submitButon" type="button" value="Dodaj" />
     </form>
+    <div id="weatherContainer"></div>
   </body>
   <script src="index.js"></script>
 </html>
