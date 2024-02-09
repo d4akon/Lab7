@@ -4,19 +4,30 @@ const apiKey = "5b8d9d34eb4de58f7d685bf4baa21165";
 const weatherForm = document.getElementById("weatherForm");
 const button = document.getElementById("submitButon");
 const weatherContainer = document.getElementById("weatherContainer");
+const updateTimeKey = "updateTime";
+const intervalTime = 5 * 1000 * 60;
+
+setInterval(() => {
+  updateTheWeather();
+}, intervalTime);
 
 window.addEventListener("load", async () => {
-  const keys = Object.keys(localStorage);
-  keys.forEach(async (key) => {
-    const weather = await getWeatherForCity(key);
-    localStorage.setItem(key, JSON.stringify(weather));
-    weatherContainer.insertAdjacentHTML = "";
-    createNewWeatherElement(weather);
-  });
+  if (!localStorage.getItem(updateTimeKey))
+    localStorage.setItem(updateTimeKey, Date.now());
+
+  if (localStorage.length > 1) {
+    const keys = Object.keys(localStorage);
+    keys.forEach(async (key) => {
+      if (key === updateTimeKey) return;
+      const weather = localStorage.getItem(key);
+      weatherContainer.innerHTML = "";
+      createNewWeatherElement(JSON.parse(weather));
+    });
+  }
+  await updateTheWeather();
 });
 
 button.addEventListener("click", async () => {
-  console.log(localStorage.length);
   const input = weatherForm.cityInput.value;
   const weather = await getWeatherForCity(input);
   if (localStorage.length > 9) {
@@ -64,7 +75,6 @@ function createNewWeatherElement(weather) {
   div.id = weather.name;
   img.src = getWeatherIcon(weather.weather[0].icon);
   header.textContent = weather.name;
-  console.log(new Date(weather.dt * 1000));
   temp.textContent = `${weather.main.temp} °C`;
   hum.textContent = `${weather.main.humidity}%`;
   pres.textContent = `${weather.main.pressure} hPa`;
@@ -74,6 +84,22 @@ function createNewWeatherElement(weather) {
   });
   div.append(header, img, temp, hum, pres, removeBtn);
   weatherContainer.append(div);
+}
+
+async function updateTheWeather() {
+  const timeDiff = Date.now() - localStorage.getItem(updateTimeKey);
+  const keys = Object.keys(localStorage);
+  keys.forEach(async (key) => {
+    if (key === updateTimeKey) return;
+    if (timeDiff >= intervalTime && localStorage.length > 1) {
+      const weather = await getWeatherForCity(key);
+      localStorage.setItem(key, JSON.stringify(weather));
+      weatherContainer.innerHTML = "";
+      createNewWeatherElement(weather);
+      console.log("updated weather");
+      localStorage.setItem(updateTimeKey, Date.now());
+    }
+  });
 }
 
 function removeWeatherElement(key) {
