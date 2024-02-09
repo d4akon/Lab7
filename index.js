@@ -7,9 +7,11 @@ const weatherContainer = document.getElementById("weatherContainer");
 
 window.addEventListener("load", async () => {
   const keys = Object.keys(localStorage);
-  keys.forEach((key) => {
-    const weather = localStorage.getItem(key);
-    createNewWeatherElement(JSON.parse(weather));
+  keys.forEach(async (key) => {
+    const weather = await getWeatherForCity(key);
+    localStorage.setItem(key, JSON.stringify(weather));
+    weatherContainer.insertAdjacentHTML = "";
+    createNewWeatherElement(weather);
   });
 });
 
@@ -62,6 +64,7 @@ function createNewWeatherElement(weather) {
   div.id = weather.name;
   img.src = getWeatherIcon(weather.weather[0].icon);
   header.textContent = weather.name;
+  console.log(new Date(weather.dt * 1000));
   temp.textContent = `${weather.main.temp} °C`;
   hum.textContent = `${weather.main.humidity}%`;
   pres.textContent = `${weather.main.pressure} hPa`;
