@@ -31,10 +31,23 @@ button.addEventListener("click", async () => {
 });
 
 async function getWeatherForCity(city) {
-  const response = await fetch(
-    `${weatherUrl}?q=${city}&appid=${apiKey}&units=metric`
-  );
-  return await response.json();
+  return new Promise((resolve, reject) => {
+    fetch(`${weatherUrl}?q=${city}&appid=${apiKey}&units=metric`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch weather data");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching weather data:", error);
+        alert(error);
+        reject(error);
+      });
+  });
 }
 
 function createNewWeatherElement(weather) {
