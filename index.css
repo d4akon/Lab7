@@ -28,4 +28,17 @@
 
 .weather-item > * {
   margin-bottom: 7px;
+  padding: 5px;
+}
+
+.weather-item > button {
+  border-radius: 5px;
+  border-style: none;
+  padding: 10px;
+  background-color: #dbdbdb;
+}
+
+.weather-item > button:hover {
+  background-color: rgb(189, 16, 16);
+  cursor: pointer;
 }

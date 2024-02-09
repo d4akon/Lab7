@@ -12,9 +12,17 @@ setInterval(() => {
 }, intervalTime);
 
 window.addEventListener("load", async () => {
+  setInitialUpdateTime();
+  fillWeatherContainer();
+  await updateTheWeather();
+});
+
+function setInitialUpdateTime() {
   if (!localStorage.getItem(updateTimeKey))
     localStorage.setItem(updateTimeKey, Date.now());
+}
 
+function fillWeatherContainer() {
   if (localStorage.length > 1) {
     const keys = Object.keys(localStorage);
     weatherContainer.innerHTML = "";
@@ -24,10 +32,13 @@ window.addEventListener("load", async () => {
       createNewWeatherElement(JSON.parse(weather));
     });
   }
-  await updateTheWeather();
-});
+}
 
 button.addEventListener("click", async () => {
+  await handleInputValue();
+});
+
+async function handleInputValue() {
   const input = weatherForm.cityInput.value;
   const weather = await getWeatherForCity(input);
   if (localStorage.length > 10) {
@@ -41,7 +52,7 @@ button.addEventListener("click", async () => {
     alert(`Jest już takie miasto jak ${weather.name}!`);
   }
   weatherForm.cityInput.value = "";
-});
+}
 
 async function getWeatherForCity(city) {
   return new Promise((resolve, reject) => {
@@ -75,9 +86,9 @@ function createNewWeatherElement(weather) {
   div.id = weather.name;
   img.src = getWeatherIcon(weather.weather[0].icon);
   header.textContent = weather.name;
-  temp.textContent = `${weather.main.temp} °C`;
-  hum.textContent = `${weather.main.humidity}%`;
-  pres.textContent = `${weather.main.pressure} hPa`;
+  temp.textContent = `Temperatura: ${weather.main.temp} °C`;
+  hum.textContent = `Wilgotność: ${weather.main.humidity}%`;
+  pres.textContent = `Ciśnienie: ${weather.main.pressure} hPa`;
   removeBtn.textContent = "Usuń";
   removeBtn.addEventListener("click", () => {
     removeWeatherElement(div.id);
