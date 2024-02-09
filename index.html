@@ -10,7 +10,13 @@
     <form id="weatherForm" action="" method="get">
       <p>Wprowadź miasto:</p>
       <br />
-      <input type="text" id="cityInput" required minlength="1" />
+      <input
+        type="text"
+        id="cityInput"
+        required
+        minlength="1"
+        autocomplete="off"
+      />
       <input id="submitButon" type="button" value="Dodaj" />
     </form>
     <div id="weatherContainer"></div>

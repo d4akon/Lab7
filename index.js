@@ -5,7 +5,7 @@ const weatherForm = document.getElementById("weatherForm");
 const button = document.getElementById("submitButon");
 const weatherContainer = document.getElementById("weatherContainer");
 const updateTimeKey = "updateTime";
-const intervalTime = 5 * 1000 * 60;
+const intervalTime = 5 * 60 * 1000;
 
 setInterval(() => {
   updateTheWeather();
@@ -17,10 +17,10 @@ window.addEventListener("load", async () => {
 
   if (localStorage.length > 1) {
     const keys = Object.keys(localStorage);
+    weatherContainer.innerHTML = "";
     keys.forEach(async (key) => {
       if (key === updateTimeKey) return;
       const weather = localStorage.getItem(key);
-      weatherContainer.innerHTML = "";
       createNewWeatherElement(JSON.parse(weather));
     });
   }
@@ -30,7 +30,7 @@ window.addEventListener("load", async () => {
 button.addEventListener("click", async () => {
   const input = weatherForm.cityInput.value;
   const weather = await getWeatherForCity(input);
-  if (localStorage.length > 9) {
+  if (localStorage.length > 10) {
     alert("Nie można dodawać więcej niż 10 miast!");
     return;
   }
@@ -89,17 +89,18 @@ function createNewWeatherElement(weather) {
 async function updateTheWeather() {
   const timeDiff = Date.now() - localStorage.getItem(updateTimeKey);
   const keys = Object.keys(localStorage);
-  keys.forEach(async (key) => {
-    if (key === updateTimeKey) return;
-    if (timeDiff >= intervalTime && localStorage.length > 1) {
+  if (timeDiff >= intervalTime && localStorage.length > 1) {
+    weatherContainer.innerHTML = "";
+
+    keys.forEach(async (key) => {
+      if (key === updateTimeKey) return;
       const weather = await getWeatherForCity(key);
       localStorage.setItem(key, JSON.stringify(weather));
-      weatherContainer.innerHTML = "";
       createNewWeatherElement(weather);
-      console.log("updated weather");
+      console.log("updated weather for: " + weather.name);
       localStorage.setItem(updateTimeKey, Date.now());
-    }
-  });
+    });
+  }
 }
 
 function removeWeatherElement(key) {
